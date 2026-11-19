@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daniel Wants to Say Something</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: linear-gradient(180deg, #dff3ff 0%, #fff4e6 58%, #d8f3dc 100%);
+      color: #2b2d42;
+      position: relative;
+    }
+
+    .scene {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .floating-item {
+      position: absolute;
+      font-size: clamp(2.1rem, 6vw, 3.3rem);
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.08));
+      transition: transform 0.2s ease;
+    }
+
+    .floating-item:active {
+      transform: scale(1.25);
+    }
+
+    .toy {
+      animation: floatBob 4.5s ease-in-out infinite;
+    }
+
+    .flower {
+      bottom: 6%;
+      transform-origin: bottom center;
+      animation: swayFlower 3.6s ease-in-out infinite;
+    }
+
+    @keyframes floatBob {
+      0%, 100% {
+        transform: translateY(0px) rotate(-3deg);
+      }
+      50% {
+        transform: translateY(-16px) rotate(4deg);
+      }
+    }
+
+    @keyframes swayFlower {
+      0%, 100% {
+        transform: rotate(-7deg);
+      }
+      50% {
+        transform: rotate(7deg);
+      }
+    }
+
+    @keyframes popBounce {
+      0% { transform: scale(1) rotate(0deg); }
+      35% { transform: scale(1.32) rotate(-10deg); }
+      70% { transform: scale(0.92) rotate(8deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .popped {
+      animation: popBounce 0.55s ease !important;
+    }
+
+    .view {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 18px;
+      text-align: center;
+    }
+
+    .view.active {
+      display: flex;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 26px;
+      padding: 32px 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 16px 36px rgba(43, 45, 66, 0.12);
+    }
+
+    .tag {
+      display: inline-block;
+      background: #ffe5ec;
+      color: #c9184a;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(1.55rem, 5.5vw, 2.1rem);
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: #1d1e2c;
+    }
+
+    .subtitle {
+      font-size: 0.98rem;
+      color: #4a4e69;
+      margin-bottom: 24px;
+    }
+
+    .daniel-btn {
+      width: 100%;
+      padding: 16px 22px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(135deg, #ff5d8f, #ff8fab);
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(255, 93, 143, 0.35);
+      animation: pulseBtn 2.2s infinite;
+      transition: transform 0.15s ease;
+    }
+
+    .daniel-btn:active {
+      transform: scale(0.97);
+    }
+
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 10px 22px rgba(255, 93, 143, 0.35); }
+      50% { box-shadow: 0 12px 28px rgba(255, 93, 143, 0.58); }
+    }
+
+    .bubble {
+      margin-top: 16px;
+      min-height: 24px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #6c5ce7;
+    }
+
+    .sorry-bear {
+      font-size: 3.6rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: floatBob 3s ease-in-out infinite;
+    }
+
+    .sorry-message {
+      font-size: 1.02rem;
+      line-height: 1.6;
+      color: #3d405b;
+      margin: 12px 0 24px;
+    }
+
+    .back-btn {
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #2b2d42;
+      background: #edf2f4;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .back-btn:active {
+      background: #dce3e8;
+    }
+
+    .petal {
+      position: fixed;
+      top: -40px;
+      font-size: 1.4rem;
+      pointer-events: none;
+      z-index: 3;
+      animation: fallPetal linear forwards;
+    }
+
+    @keyframes fallPetal {
+      to {
+        transform: translateY(108vh) rotate(360deg);
+        opacity: 0.2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <div class="floating-item toy" style="top: 10%; left: 8%; animation-delay: 0s;" data-msg="Teddy says: 'Daniel has been thinking about you!'">🧸</div>
+    <div class="floating-item toy" style="top: 15%; right: 9%; animation-delay: 0.8s;" data-msg="Rubber ducky says: 'Quack! Don't stay upset!'">🦆</div>
+    <div class="floating-item toy" style="top: 34%; left: 5%; animation-delay: 1.5s;" data-msg="Toy train says: 'Choo-choo! All aboard for a fresh start!'">🚂</div>
+    <div class="floating-item toy" style="top: 30%; right: 6%; animation-delay: 2.1s;" data-msg="Star says: 'Tap the button in the middle!'">⭐</div>
+
+    <div class="floating-item flower" style="left: 7%; animation-delay: 0.2s;" data-msg="Sunflower says: 'Sunny days ahead!'">🌻</div>
+    <div class="floating-item flower" style="left: 24%; animation-delay: 1.1s;" data-msg="Tulip says: 'Sending gentle smiles!'">🌷</div>
+    <div class="floating-item flower" style="right: 24%; animation-delay: 0.6s;" data-msg="Blossom says: 'Everything is going to be okay!'">🌸</div>
+    <div class="floating-item flower" style="right: 7%; animation-delay: 1.7s;" data-msg="Rose says: 'Daniel really cares!'">🌹</div>
+  </div>
+
+  <!-- Page 1: Home -->
+  <main class="view active" id="homeView">
+    <div class="card">
+      <span class="tag">Toys • Flowers • Little Message</span>
+      <h1>Welcome to the Playful Garden</h1>
+      <p class="subtitle">Tap any toy or flower around you, or press the button below when you're ready.</p>
+      <button class="daniel-btn" id="openSorryBtn">Daniel want to say something</button>
+      <div class="bubble" id="bubbleText"></div>
+    </div>
+  </main>
+
+  <!-- Page 2: Sorry Page -->
+  <section class="view" id="sorryView">
+    <div class="card">
+      <div class="sorry-bear">🧸❤️</div>
+      <span class="tag">From Daniel</span>
+      <h1>I'm Really Sorry</h1>
+      <p class="sorry-message">
+        I'm truly sorry if I upset you or made you feel bad. You mean a lot to me, and I hope we can smile and make things right again.
+      </p>
+      <button class="back-btn" id="backHomeBtn">← Back to Toys & Flowers</button>
+    </div>
+  </section>
+
+  <script>
+    const homeView = document.getElementById("homeView");
+    const sorryView = document.getElementById("sorryView");
+    const openSorryBtn = document.getElementById("openSorryBtn");
+    const backHomeBtn = document.getElementById("backHomeBtn");
+    const bubbleText = document.getElementById("bubbleText");
+    let petalTimer = null;
+
+    document.querySelectorAll(".floating-item").forEach(item => {
+      item.addEventListener("click", () => {
+        item.classList.remove("popped");
+        void item.offsetWidth;
+        item.classList.add("popped");
+        bubbleText.textContent = item.dataset.msg || "";
+      });
+    });
+
+    function spawnPetals() {
+      const icons = ["🌸", "🌷", "❤️", "✨"];
+      const el = document.createElement("div");
+      el.className = "petal";
+      el.textContent = icons[Math.floor(Math.random() * icons.length)];
+      el.style.left = `${Math.random() * 94}vw`;
+      el.style.animationDuration = `${3.2 + Math.random() * 2.5}s`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 6000);
+    }
+
+    openSorryBtn.addEventListener("click", () => {
+      homeView.classList.remove("active");
+      sorryView.classList.add("active");
+      clearInterval(petalTimer);
+      spawnPetals();
+      petalTimer = setInterval(spawnPetals, 450);
+    });
+
+    backHomeBtn.addEventListener("click", () => {
+      sorryView.classList.remove("active");
+      homeView.classList.add("active");
+      clearInterval(petalTimer);
+      document.querySelectorAll(".petal").forEach(p => p.remove());
+    });
+  </script>
+</body>
+</html>
